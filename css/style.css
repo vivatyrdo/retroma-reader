@@ -1,0 +1,501 @@
+:root {
+    /* Точные цвета со скриншота */
+    --bg-app: #120b1c;          /* Самый темный фиолетовый (внешний фон) */
+    --bg-workspace: #1a1e36;    /* Темно-синий фон рабочей области */
+    
+    --border-outer: #372554;    /* Внешняя фиолетовая рамка */
+    --border-inner: #4f397a;    /* Внутреннее фиолетовое свечение/рамка */
+    --border-divider: #2a2e4c;  /* Разделительные линии */
+    
+    --tab-bg-active: #1a1e36;
+    --tab-bg-inactive: #120b1c;
+    
+    --text-main: #b3b9c5;       /* Светло-серый текст */
+    --text-muted: #6b728e;      /* Тусклый текст */
+    
+    --accent-orange: #ff8b52;   /* Тот самый персиково-оранжевый */
+    --accent-blue: #70a5eb;     /* Голубой для ссылок */
+    
+    --radius-panel: 14px;
+    --radius-tab: 10px;
+    
+    /* Обсидиановский объем: тонкая светлая рамка внутри + темная тень снаружи */
+    --panel-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), inset 0 0 0 1px var(--border-inner);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    background-color: var(--bg-app);
+    color: var(--text-main);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    height: 100vh;
+    display: flex;
+    overflow: hidden;
+}
+
+#app-container {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    padding: 12px;
+    gap: 12px;
+}
+
+/* --- ЛЕВЫЙ САЙДБАР --- */
+#sidebar {
+    width: 65px;
+    background-color: var(--bg-workspace);
+    border: 1px solid var(--border-outer);
+    border-radius: var(--radius-panel);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 15px;
+    box-shadow: var(--panel-shadow);
+    z-index: 10;
+}
+
+.sidebar-icons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    align-items: center;
+}
+
+.icon-btn {
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--text-muted);
+    font-size: 22px;
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-btn:hover {
+    color: var(--text-main);
+    background-color: rgba(79, 57, 122, 0.3);
+}
+
+.icon-btn.active {
+    color: var(--accent-orange);
+    background-color: #252042;
+    border: 1px solid var(--border-inner);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+}
+
+/* --- РАБОЧАЯ ОБЛАСТЬ --- */
+#workspace {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--bg-workspace);
+    border: 1px solid var(--border-outer);
+    border-radius: var(--radius-panel);
+    box-shadow: var(--panel-shadow);
+    overflow: hidden;
+    position: relative;
+}
+
+/* Внутренняя тонкая рамка как в Обсидиане (отступ внутри окна) */
+#workspace::before {
+    content: '';
+    position: absolute;
+    top: 6px; left: 6px; right: 6px; bottom: 6px;
+    border: 1px solid rgba(79, 57, 122, 0.4);
+    border-radius: 10px;
+    pointer-events: none; /* Чтобы не мешало кликать */
+    z-index: 50;
+}
+
+/* --- ВЕРХНЯЯ ПАНЕЛЬ (ВКЛАДКИ) --- */
+#tabs-bar {
+    height: 46px;
+    background-color: transparent; /* Фон берется от workspace */
+    display: flex;
+    align-items: center; /* Центрируем вкладки по вертикали, как на скрине */
+    padding: 0 16px;
+    gap: 8px;
+    border-bottom: 1px solid var(--border-divider);
+    position: relative;
+    z-index: 2;
+}
+
+.tab {
+    background-color: var(--tab-bg-inactive);
+    border: 1px solid var(--border-outer);
+    border-radius: var(--radius-tab);
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: inset 0 1px 1px rgba(255,255,255,0.05);
+    transition: all 0.2s;
+}
+
+.tab.active {
+    background-color: var(--tab-bg-active);
+    color: var(--accent-orange);
+    border: 1px solid var(--border-inner);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.4), inset 0 1px 2px rgba(255,255,255,0.1);
+}
+
+/* --- ОБЛАСТЬ КОНТЕНТА --- */
+#content-area {
+    flex: 1;
+    position: relative;
+    overflow-y: auto;
+    padding: 40px 60px;
+    z-index: 2;
+}
+
+.view { display: none; }
+.view.active { display: block; }
+
+.library-header h2 {
+    color: var(--accent-orange);
+    font-size: 22px;
+    font-weight: 800;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    letter-spacing: 0.5px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+}
+
+.library-header i {
+    color: var(--text-main); /* Иконка домика светлая, а текст оранжевый */
+}
+
+.divider {
+    border: none;
+    border-top: 1px solid var(--border-divider);
+    margin-bottom: 30px;
+    width: 60%; /* Линия не на всю ширину, как на скрине */
+}
+
+/* --- СТАТУС-БАР --- */
+#status-bar {
+    height: 30px;
+    background-color: transparent;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    font-size: 11px;
+    color: var(--text-muted);
+    z-index: 2;
+}
+
+/* --- МОБИЛЬНАЯ АДАПТАЦИЯ --- */
+@media (max-width: 768px) {
+    body { padding-top: env(safe-area-inset-top); }
+    #app-container { flex-direction: column-reverse; padding: 0; gap: 0; }
+    #workspace { border-radius: 0; border: none; box-shadow: none; }
+    #workspace::before { display: none; } /* Убираем внутреннюю рамку на телефоне */
+    #sidebar {
+        width: 100%; height: 60px; flex-direction: row;
+        padding-top: 0; border-radius: 0; border: none;
+        border-top: 1px solid var(--border-outer);
+        box-shadow: 0 -4px 20px rgba(0,0,0,0.6);
+    }
+    .sidebar-icons { flex-direction: row; justify-content: space-around; height: 100%; }
+    #content-area { padding: 20px; }
+    #status-bar { display: none; }
+}
+
+/* =========================================
+   КАРТОЧКИ КНИГ В ГАЛЕРЕЕ
+   ========================================= */
+.grid-container {
+    display: grid;
+    /* Адаптивная сетка: колонки минимум 140px, максимум сколько влезет */
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 24px;
+    padding-bottom: 20px;
+}
+
+.book-card {
+    background-color: var(--tab-bg-active);
+    border: 1px solid var(--border-outer);
+    border-radius: var(--radius-tab);
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.book-card:hover {
+    transform: translateY(-4px); /* Приподнимаем при наведении */
+    border-color: var(--border-inner);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+}
+
+.book-cover {
+    width: 100%;
+    aspect-ratio: 2 / 3; /* Классическая пропорция обложки книги */
+    background-color: #161224; /* Заглушка, если нет обложки */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    border-bottom: 1px solid var(--border-divider);
+}
+
+.book-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Картинка заполняет область без искажений */
+}
+
+.book-cover i {
+    font-size: 48px;
+    color: var(--border-inner); /* Иконка-заглушка */
+}
+
+.book-info {
+    padding: 12px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.book-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-main);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Троеточие, если текст не влезает */
+}
+
+.book-author {
+    font-size: 12px;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Полоса прогресса под обложкой */
+.book-progress-bg {
+    height: 3px;
+    background-color: var(--bg-app);
+    width: 100%;
+}
+
+.book-progress-fill {
+    height: 100%;
+    background-color: var(--accent-orange);
+    width: 0%; /* Это значение мы будем менять через JS */
+    box-shadow: 0 0 5px var(--accent-orange);
+}
+
+/* =========================================
+   СТРАНИЦА ИНФОРМАЦИИ О КНИГЕ
+   ========================================= */
+.book-info-layout {
+    display: flex;
+    gap: 30px;
+    margin-top: 10px;
+}
+
+.info-cover {
+    width: 220px;
+    height: 330px;
+    background-color: #161224;
+    border: 1px solid var(--border-outer);
+    border-radius: var(--radius-panel);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.info-cover img { width: 100%; height: 100%; object-fit: cover; }
+.info-cover i { font-size: 64px; color: var(--border-inner); }
+
+.info-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.info-details h1 {
+    color: var(--text-main);
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1.2;
+}
+
+.info-details h3 {
+    color: var(--accent-blue);
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.info-actions {
+    display: flex;
+    gap: 12px;
+    margin: 15px 0;
+    flex-wrap: wrap;
+}
+
+.obsidian-btn {
+    background-color: var(--tab-bg-inactive);
+    color: var(--text-main);
+    border: 1px solid var(--border-outer);
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: inset 0 1px 1px rgba(255,255,255,0.05), 0 2px 5px rgba(0,0,0,0.3);
+}
+
+.obsidian-btn:hover {
+    border-color: var(--border-inner);
+    background-color: var(--tab-bg-active);
+}
+
+.obsidian-btn.primary {
+    background-color: #252042;
+    color: var(--accent-orange);
+    border-color: var(--border-inner);
+}
+
+.obsidian-btn.primary:hover {
+    box-shadow: 0 0 15px rgba(229, 139, 94, 0.2), inset 0 1px 1px rgba(255,255,255,0.1);
+}
+
+.obsidian-btn.danger:hover {
+    color: #ff6b6b;
+    border-color: #ff6b6b;
+    background-color: rgba(255, 107, 107, 0.1);
+}
+
+.info-description {
+    background-color: rgba(0,0,0,0.2);
+    border: 1px solid var(--border-outer);
+    border-radius: var(--radius-panel);
+    padding: 20px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    font-size: 14px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.info-description h4 { color: var(--text-main); margin-bottom: 10px; font-size: 16px; }
+
+/* Адаптив описания для телефона */
+@media (max-width: 768px) {
+    .book-info-layout { flex-direction: column; align-items: center; text-align: center; }
+    .info-actions { justify-content: center; }
+}
+
+/* =========================================
+   ЧИТАЛКА (READER VIEW)
+   ========================================= */
+#view-reader {
+    /* Чтобы читалка перекрывала внутренние отступы content-area */
+    position: absolute; 
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: var(--bg-workspace);
+    z-index: 10;
+    display: none; /* Скрыто по умолчанию */
+    flex-direction: column;
+    border-radius: var(--radius-panel);
+}
+
+#view-reader.active { display: flex; }
+
+.reader-header {
+    height: 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 15px;
+    border-bottom: 1px solid var(--border-divider);
+    background-color: rgba(0,0,0,0.2);
+}
+
+.reader-book-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-main);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 60%;
+    text-align: center;
+}
+
+.reader-content {
+    flex: 1;
+    display: flex;
+    position: relative;
+    overflow: hidden;
+}
+
+.epub-container {
+    flex: 1;
+    height: 100%;
+    overflow: hidden;
+}
+
+/* Стрелки навигации */
+.nav-arrow {
+    width: 60px;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 36px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    z-index: 2;
+}
+
+.nav-arrow:hover {
+    color: var(--accent-orange);
+    background: rgba(255,255,255,0.03);
+}
+
+.reader-footer {
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-top: 1px solid var(--border-divider);
+    font-size: 12px;
+    color: var(--text-muted);
+    background-color: rgba(0,0,0,0.2);
+}
+
+@media (max-width: 768px) {
+    .nav-arrow { width: 40px; font-size: 28px; }
+}

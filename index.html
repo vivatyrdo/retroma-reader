@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Retroma Reader</title>
+    
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Подключаем красивые иконки (Phosphor Icons) -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Библиотеки -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/localforage/1.10.0/localforage.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/epubjs/dist/epub.min.js"></script>
+</head>
+<body>
+
+    <div id="app-container">
+        <!-- Сайдбар (на мобилке станет нижней панелью) -->
+        <aside id="sidebar">
+            <div class="sidebar-icons">
+                <button class="icon-btn active" id="nav-home" title="Library"><i class="ph ph-house"></i></button>
+                <button class="icon-btn" id="nav-add" title="Add Book"><i class="ph ph-plus-circle"></i></button>
+                <button class="icon-btn" id="nav-settings" title="Settings"><i class="ph ph-gear"></i></button>
+            </div>
+            <input type="file" id="book-upload" accept=".epub" style="display: none;">
+        </aside>
+
+        <!-- Рабочая область -->
+        <main id="workspace">
+            <!-- Верхняя панель (Tabs) -->
+            <header id="tabs-bar">
+                <div class="tab active" id="tab-library"><i class="ph ph-books"></i> HOME PAGE</div>
+            </header>
+
+            <div id="content-area">
+                <section id="view-library" class="view active">
+                    <div class="library-header">
+                        <h2><i class="ph ph-house-line"></i> HOME PAGE</h2>
+                        <hr class="divider">
+                    </div>
+                    <div id="books-grid" class="grid-container">
+                        <!-- Книги -->
+                    </div>
+                </section>
+
+                <section id="view-book-info" class="view">
+                <div class="library-header" style="justify-content: flex-start; gap: 15px;">
+                    <button id="btn-back-to-lib" class="icon-btn" title="Назад в библиотеку"><i class="ph ph-arrow-left"></i></button>
+                    <h2>ИНФОРМАЦИЯ</h2>
+                </div>
+                <hr class="divider" style="width: 100%;">
+                
+                <div class="book-info-layout">
+                    <div class="info-cover" id="info-cover-img"></div>
+                    <div class="info-details">
+                        <h1 id="info-title">Название книги</h1>
+                        <h3 id="info-author">Автор</h3>
+                        
+                        <div class="info-actions">
+                            <button class="obsidian-btn primary" id="btn-read-book"><i class="ph ph-book-open"></i> Читать</button>
+                            <button class="obsidian-btn" id="btn-edit-book"><i class="ph ph-pencil-simple"></i> Изменить</button>
+                            <button class="obsidian-btn danger" id="btn-delete-book"><i class="ph ph-trash"></i> Удалить</button>
+                        </div>
+                        
+                        <div class="info-description">
+                            <h4>Аннотация:</h4>
+                            <p id="info-desc-text">Загрузка описания...</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+                <!-- ЭКРАН 4: Читалка (Reader) -->
+            <section id="view-reader" class="view">
+                <div class="reader-header">
+                    <button id="btn-close-reader" class="icon-btn" title="Закрыть книгу"><i class="ph ph-x"></i></button>
+                    <div id="reader-title" class="reader-book-title">Название книги</div>
+                    <button id="btn-reader-settings" class="icon-btn" title="Настройки"><i class="ph ph-text-aa"></i></button>
+                </div>
+                
+                <div class="reader-content">
+                    <button id="btn-prev" class="nav-arrow"><i class="ph ph-caret-left"></i></button>
+                    
+                    <!-- Сюда epub.js будет вставлять iframe с книгой -->
+                    <div id="viewer" class="epub-container"></div>
+                    
+                    <button id="btn-next" class="nav-arrow"><i class="ph ph-caret-right"></i></button>
+                </div>
+                
+                <div class="reader-footer">
+                    <span id="reader-progress">0%</span>
+                </div>
+            </section>
+            </div>
+            
+            <footer id="status-bar">
+                <div class="status-left"><i class="ph ph-info"></i> Открыт раздел: Library</div>
+                <div class="status-right">Книг в базе: <span id="books-count">0</span></div>
+            </footer>
+        </main>
+    </div>
+
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>
